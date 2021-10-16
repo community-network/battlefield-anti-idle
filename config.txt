@@ -1,0 +1,4 @@
+group_id = '0fda8e4c-5be3-11eb-b1da-cd4ff7dab605'
+game_location = 'F:\Program Files (x86)\Origin Games\Battlefield V\bfv.exe'
+hostname = 'Jobse-Laptop'
+allow_shutdown = false
