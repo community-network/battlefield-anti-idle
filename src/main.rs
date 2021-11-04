@@ -49,7 +49,7 @@ unsafe fn create_input(key_code: u16, flags: u32) -> INPUT {
     let mut input = mem::zeroed::<INPUT>();
     input.type_ = INPUT_KEYBOARD;
     let mut ki = input.u.ki_mut();
-    ki.wVk = wvk;
+    ki.wVk = 0;
     ki.wScan = key_code;
     ki.dwExtraInfo = 0;
     ki.dwFlags = flags;
