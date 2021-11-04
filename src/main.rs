@@ -8,7 +8,7 @@ use std::{
     time::Duration,
 };
 use winapi::shared::windef::HWND__;
-use winapi::um::winuser::{FindWindowW, INPUT, INPUT_KEYBOARD, KEYEVENTF_KEYUP, SendInput, SetForegroundWindow, ShowWindow};
+use winapi::um::winuser::{FindWindowW, INPUT, INPUT_KEYBOARD, KEYEVENTF_SCANCODE, KEYEVENTF_KEYUP, SendInput, SetForegroundWindow, ShowWindow};
 
 struct GameInfo {
     is_running: bool,
@@ -58,7 +58,7 @@ unsafe fn create_input(key_code: u16, flags: u32) -> INPUT {
 }
 
 unsafe fn key_down(key_code: u16) {
-    let mut input = create_input(key_code, 0);
+    let mut input = create_input(key_code, KEYEVENTF_SCANCODE);
     SendInput(1, &mut input, mem::size_of::<INPUT>() as i32);
 }
 
