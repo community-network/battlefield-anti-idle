@@ -24,7 +24,7 @@ fn main() {
                 SetForegroundWindow(game_info.game_process);
                 ShowWindow(game_info.game_process, 9);
                 sleep(Duration::from_millis(1808));
-                key_enter(0x45);
+                key_enter(0x12);
                 sleep(Duration::from_millis(100));
                 ShowWindow(game_info.game_process, 6);
             }
@@ -49,8 +49,11 @@ unsafe fn create_input(key_code: u16, flags: u32) -> INPUT {
     let mut input = mem::zeroed::<INPUT>();
     input.type_ = INPUT_KEYBOARD;
     let mut ki = input.u.ki_mut();
-    ki.wVk = key_code;
+    ki.wVk = wvk;
+    ki.wScan = key_code;
+    ki.dwExtraInfo = 0;
     ki.dwFlags = flags;
+    ki.time = 0;
     input
 }
 
