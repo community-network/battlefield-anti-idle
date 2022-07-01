@@ -24,6 +24,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: target/release/bf5-anti-afk-script.exe
+          files: target/release/bf1-anti-afk-script.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
