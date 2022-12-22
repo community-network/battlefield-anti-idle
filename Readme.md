@@ -4,8 +4,9 @@ It can also send messages on specified times based on what you set in the config
 
 download it here: https://github.com/community-network/battlefield-anti-idle/releases/latest
 
+Config file
 ```bash
-# it will autogenerate one of these files when you run the script and it doesn't exist already.
+# It will autogenerate one of these files when you run the script when it doesn't exist already.
 
 # It will send messages based on timeout when set to true
 send_messages = false
