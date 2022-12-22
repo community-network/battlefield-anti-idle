@@ -8,15 +8,35 @@ use std::{
 };
 use winapi::shared::windef::HWND__;
 use winapi::um::winuser::{FindWindowW, SetForegroundWindow, SendMessageW, GetForegroundWindow};
+use std::io::Write;
+use chrono::Local;
+use env_logger::Builder;
+use log::LevelFilter;
 
 struct GameInfo {
     is_running: bool,
     game_process: *mut HWND__
 }
 
-fn main() {
+pub fn anti_afk_runner(game_name: &str) {
+    let mut run_once_no_game = true;
+
+    Builder::new()
+    .format(|buf, record| {
+        writeln!(buf,
+            "{} [{}] - {}",
+            Local::now().format("%Y-%m-%dT%H:%M:%S"),
+            record.level(),
+            record.args()
+        )
+    })
+    .filter(None, LevelFilter::Info)
+    .init();
+
+    log::info!("Script started.");
+
     loop {
-        let game_info = is_running();
+        let game_info = is_running(game_name);
         if game_info.is_running {
             unsafe {
                 let current_forground_window = GetForegroundWindow();
@@ -24,6 +44,14 @@ fn main() {
                 SendMessageW(game_info.game_process, 0x201, 0, l_param as isize);
                 SendMessageW(game_info.game_process, 0x202, 0, l_param as isize);
                 SetForegroundWindow(current_forground_window);
+                // reset no game check
+                run_once_no_game = true;
+            }
+            log::info!("Running anti-idle for {}.", game_name);
+        } else {
+            if run_once_no_game {
+                log::info!("No game found, idleing...");
+                run_once_no_game = false;
             }
         }
         sleep(Duration::from_secs(120));
@@ -34,9 +62,9 @@ fn make_l_param(lo_word: i32, hi_word: i32) -> i32 {
     return (hi_word << 16) | (lo_word & 0xffff);
 }
 
-fn is_running() -> GameInfo {
+fn is_running(game_name: &str) -> GameInfo {
     unsafe {
-        let window: Vec<u16> = OsStr::new("Battlefield™ 1")
+        let window: Vec<u16> = OsStr::new(game_name)
             .encode_wide()
             .chain(once(0))
             .collect();

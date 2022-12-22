@@ -1,5 +1,5 @@
 [package]
-name = "bf1-anti-afk-script"
+name = "battlefield-anti-afk-script"
 description = ""
 version = "0.1.0"
 edition = "2018"
@@ -10,3 +10,19 @@ authors = ["iiTzArcur <arcur@gametools.network>"]
 [dependencies]
 serde = "1.0.130"
 winapi = { version = "0.3.9", features = ["winuser"] }
+log = "0.4"
+env_logger = "0.10.0"
+chrono = "*"
+
+
+[[bin]]
+name = "bf1"
+path = "src/bf1.rs"
+
+[[bin]]
+name = "bfv"
+path = "src/bfv.rs"
+
+[[bin]]
+name = "bf2042"
+path = "src/bf2042.rs"
