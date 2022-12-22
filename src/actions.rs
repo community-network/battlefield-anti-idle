@@ -38,8 +38,8 @@ pub fn anti_afk(game_name: &str, mut run_once_no_game: bool) -> bool {
 
 fn message_action(cfg: &structs::SeederConfig) {
     unsafe {
-        send_keys::key_enter(0x24, 8); // J
-        sleep(Duration::from_secs(1));
+        send_keys::key_enter(0x24, 50); // J
+        sleep(Duration::from_secs(3));
         let mut message: Vec<DXCode> = Vec::new();
         for char in cfg.message.chars() {
             match char_to_dxcodes(char) {
