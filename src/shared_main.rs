@@ -1,25 +1,18 @@
-use std::ffi::OsStr;
-use std::iter::once;
-use std::os::windows::prelude::OsStrExt;
-use std::ptr;
 use std::{
-    thread::sleep,
+    sync::{atomic, Arc},
+    thread::{sleep},
     time::Duration,
 };
-use winapi::shared::windef::HWND__;
-use winapi::um::winuser::{FindWindowW, SetForegroundWindow, SendMessageW, GetForegroundWindow};
 use std::io::Write;
 use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
-
-struct GameInfo {
-    is_running: bool,
-    game_process: *mut HWND__
-}
+use crate::actions;
+use crate::structs;
 
 pub fn anti_afk_runner(game_name: &str) {
     let mut run_once_no_game = true;
+    let message_timeout = Arc::new(atomic::AtomicU32::new(0));
 
     Builder::new()
     .format(|buf, record| {
@@ -32,44 +25,39 @@ pub fn anti_afk_runner(game_name: &str) {
     })
     .filter(None, LevelFilter::Info)
     .init();
-
+    
     log::info!("Script started.");
 
-    loop {
-        let game_info = is_running(game_name);
-        if game_info.is_running {
-            unsafe {
-                let current_forground_window = GetForegroundWindow();
-                let l_param = make_l_param(20, 20);
-                SendMessageW(game_info.game_process, 0x201, 0, l_param as isize);
-                SendMessageW(game_info.game_process, 0x202, 0, l_param as isize);
-                SetForegroundWindow(current_forground_window);
-                // reset no game check
-                run_once_no_game = true;
+    let cfg: structs::SeederConfig = match confy::load_path("config.txt") {
+        Ok(config) => config,
+        Err(e) => {
+            println!("error in config.txt: {}", e);
+            println!("changing back to default..");
+            structs::SeederConfig {
+                send_messages: false,
+                message: "Join our discord, we are always recruiting: discord.gg/BoB".into(),
+                message_start_time_utc: "12:00".into(),
+                message_stop_time_utc: "23:00".into(),
+                message_timeout_mins: 8,
             }
-            log::info!("Running anti-idle for {}.", game_name);
+        }
+    };
+    confy::store_path("config.txt", cfg.clone()).unwrap();
+
+    log::info!("Config loaded.");
+
+    loop {
+        let timeout = message_timeout.load(atomic::Ordering::Relaxed);
+        if (timeout >= (cfg.message_timeout_mins / 2)) && cfg.send_messages {
+            log::info!("sending message...");
+            actions::send_message(&cfg, game_name);
+            message_timeout.store(0, atomic::Ordering::Relaxed);
         } else {
-            if run_once_no_game {
-                log::info!("No game found, idleing...");
-                run_once_no_game = false;
+            run_once_no_game = actions::anti_afk(game_name, run_once_no_game);
+            if cfg.send_messages {
+                message_timeout.store(timeout + 1, atomic::Ordering::Relaxed);
             }
         }
         sleep(Duration::from_secs(120));
     };
-}
-
-fn make_l_param(lo_word: i32, hi_word: i32) -> i32 {
-    return (hi_word << 16) | (lo_word & 0xffff);
-}
-
-fn is_running(game_name: &str) -> GameInfo {
-    unsafe {
-        let window: Vec<u16> = OsStr::new(game_name)
-            .encode_wide()
-            .chain(once(0))
-            .collect();
-        let window_handle = FindWindowW(std::ptr::null_mut(), window.as_ptr());
-        let no_game: *mut HWND__ = ptr::null_mut();
-        GameInfo{ is_running: window_handle != no_game, game_process: window_handle }
-    }
 }
