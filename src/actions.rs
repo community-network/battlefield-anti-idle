@@ -38,8 +38,8 @@ pub fn anti_afk(game_name: &str, mut run_once_no_game: bool) -> bool {
 
 fn message_action(cfg: &structs::SeederConfig) {
     unsafe {
-        send_keys::key_enter(0x24, 8);
-        sleep(Duration::from_millis(800));
+        send_keys::key_enter(0x24, 8); // J
+        sleep(Duration::from_secs(1));
         let mut message: Vec<DXCode> = Vec::new();
         for char in cfg.message.chars() {
             match char_to_dxcodes(char) {
@@ -48,9 +48,9 @@ fn message_action(cfg: &structs::SeederConfig) {
             }
         }
         send_keys::send_string(message);
-        sleep(Duration::from_millis(100));
-        send_keys::key_enter(0x1C, 8);
-        sleep(Duration::from_millis(100));   
+        sleep(Duration::from_secs(1));
+        send_keys::key_enter(0x1C, 8); // ENTER
+        sleep(Duration::from_secs(1));   
     }
 }
 
@@ -58,29 +58,29 @@ fn bf2042_message_action(cfg: &structs::SeederConfig) {
     unsafe {
         // println!("Open pause menu");
         send_keys::key_enter(0x01, 80); // ESC
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("Most left menu");
         send_keys::spam_keys(0x10, 80, 3); // Q
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("Top of list");
         send_keys::spam_keys(0xD0, 80, 5); // DOWN
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("from bottom second item");
         send_keys::key_enter(0xC8, 80); // UP
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("Click!");
         send_keys::key_enter(0x39, 80); // SPACE
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("broadcast menu");
         send_keys::key_enter(0x39, 80); // SPACE
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         
         // println!("fill in");
         send_keys::spam_keys(0xC8, 8, 2); // UP
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("fill mode");
         send_keys::key_enter(0x39, 80); // SPACE
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         let mut message: Vec<DXCode> = Vec::new();
         for char in cfg.message.chars() {
             match char_to_dxcodes(char) {
@@ -89,20 +89,20 @@ fn bf2042_message_action(cfg: &structs::SeederConfig) {
             }
         }
         send_keys::send_string(message);
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("done with message");
         send_keys::key_enter(0x1C, 80); // ENTER
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("done button");
         send_keys::key_enter(0xD0, 80); // DOWN
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
         // println!("broadcast!");
         send_keys::key_enter(0x39, 80); // SPACE
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
     
         // println!("Back to spawn screen");
         send_keys::spam_keys(0x01, 8, 2); // ESC
-        sleep(Duration::from_millis(800));
+        sleep(Duration::from_secs(1));
     }
 }
 

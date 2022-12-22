@@ -48,7 +48,7 @@ pub fn anti_afk_runner(game_name: &str) {
 
     loop {
         let timeout = message_timeout.load(atomic::Ordering::Relaxed);
-        if (timeout >= (cfg.message_timeout_mins / 2)) && cfg.send_messages {
+        if (timeout >= (cfg.message_timeout_mins)) && cfg.send_messages {
             log::info!("sending message...");
             actions::send_message(&cfg, game_name);
             message_timeout.store(0, atomic::Ordering::Relaxed);
@@ -58,6 +58,6 @@ pub fn anti_afk_runner(game_name: &str) {
                 message_timeout.store(timeout + 1, atomic::Ordering::Relaxed);
             }
         }
-        sleep(Duration::from_secs(120));
+        sleep(Duration::from_secs(60));
     };
 }
