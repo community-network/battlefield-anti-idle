@@ -16,6 +16,7 @@ jobs:
           toolchain: stable
           default: true
           override: true
+          components: clippy
           
       - name: Set up cargo cache
         uses: actions/cache@v3
