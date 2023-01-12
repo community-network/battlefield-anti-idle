@@ -11,7 +11,7 @@ use crate::{send_keys, structs};
 use crate::chars::{DXCode, char_to_dxcodes};
 
 fn make_l_param(lo_word: i32, hi_word: i32) -> i32 {
-    return (hi_word << 16) | (lo_word & 0xffff);
+    (hi_word << 16) | (lo_word & 0xffff)
 }
 
 pub fn anti_afk(game_name: &str, mut run_once_no_game: bool) -> bool {
@@ -27,13 +27,11 @@ pub fn anti_afk(game_name: &str, mut run_once_no_game: bool) -> bool {
                 run_once_no_game = true;
             }
             log::info!("Running anti-idle for {}.", game_name);
-        } else {
-            if run_once_no_game {
-                log::info!("No game found, idleing...");
-                run_once_no_game = false;
-            }
+        } else if run_once_no_game {
+            log::info!("No game found, idleing...");
+            run_once_no_game = false;
         }
-    return run_once_no_game;
+    run_once_no_game
 }
 
 fn message_action(cfg: &structs::SeederConfig) {
@@ -42,10 +40,7 @@ fn message_action(cfg: &structs::SeederConfig) {
         sleep(Duration::from_secs(3));
         let mut message: Vec<DXCode> = Vec::new();
         for char in cfg.message.chars() {
-            match char_to_dxcodes(char) {
-                Some(dx) => message.push(dx),
-                None => {},
-            }
+            if let Some(dx) = char_to_dxcodes(char) { message.push(dx) }
         }
         send_keys::send_string(message);
         sleep(Duration::from_secs(1));
@@ -83,10 +78,7 @@ fn bf2042_message_action(cfg: &structs::SeederConfig) {
         sleep(Duration::from_secs(1));
         let mut message: Vec<DXCode> = Vec::new();
         for char in cfg.message.chars() {
-            match char_to_dxcodes(char) {
-                Some(dx) => message.push(dx),
-                None => {},
-            }
+            if let Some(dx) = char_to_dxcodes(char) { message.push(dx) }
         }
         send_keys::send_string(message);
         sleep(Duration::from_secs(1));
@@ -114,7 +106,7 @@ pub fn send_message(cfg: &structs::SeederConfig, game_name: &str) {
             SetForegroundWindow(game_info.game_process);
             ShowWindow(game_info.game_process, 9);
             sleep(Duration::from_millis(1808));
-            if game_name == "" {
+            if game_name.is_empty() {
                 bf2042_message_action(cfg);
             } else {
                 message_action(cfg);
