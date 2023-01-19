@@ -16,6 +16,9 @@ env_logger = "0.10.0"
 chrono = "*"
 confy = "0.5.1"
 
+[[bin]]
+name = "bf4"
+path = "src/bf4.rs"
 
 [[bin]]
 name = "bf1"

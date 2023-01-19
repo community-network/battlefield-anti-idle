@@ -39,6 +39,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
+            target/release/bf4.exe
             target/release/bf1.exe
             target/release/bfv.exe
             target/release/bf2042.exe
