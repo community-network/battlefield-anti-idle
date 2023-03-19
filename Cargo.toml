@@ -31,3 +31,7 @@ path = "src/bfv.rs"
 [[bin]]
 name = "bf2042"
 path = "src/bf2042.rs"
+
+[[bin]]
+name = "test_msg"
+path = "src/test_msg.rs"
