@@ -1,5 +1,10 @@
-send_messages = false
-message = 'Join our discord, we are always recruiting: discord.gg/BoB'
+send_messages = true
+messages = [
+    'test1',
+    'test2',
+    'test3',
+]
+chat_type = 'Public'
 message_start_time_utc = '12:00'
 message_stop_time_utc = '23:00'
-message_timeout_mins = 8
+message_timeout_mins = 0

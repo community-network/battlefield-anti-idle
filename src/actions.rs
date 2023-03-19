@@ -2,6 +2,8 @@ use std::ffi::OsStr;
 use std::iter::once;
 use std::os::windows::prelude::OsStrExt;
 use std::ptr;
+use std::sync::atomic::{self, AtomicU32};
+use std::sync::Arc;
 use std::thread::sleep;
 use std::time::Duration;
 use winapi::shared::windef::HWND__;
@@ -36,24 +38,24 @@ pub fn anti_afk(game_name: &str, mut run_once_no_game: bool) -> bool {
     run_once_no_game
 }
 
-fn message_action(cfg: &structs::SeederConfig) {
+fn message_action(message_to_send: &str, open_chat_key: u16) {
     unsafe {
-        send_keys::key_enter(0x24, 50); // J
+        send_keys::key_enter(open_chat_key, 50); // J
         sleep(Duration::from_secs(3));
-        let mut message: Vec<DXCode> = Vec::new();
-        for char in cfg.message.chars() {
+        let mut current_message: Vec<DXCode> = Vec::new();
+        for char in message_to_send.chars() {
             if let Some(dx) = char_to_dxcodes(char) {
-                message.push(dx)
+                current_message.push(dx)
             }
         }
-        send_keys::send_string(message);
+        send_keys::send_string(current_message);
         sleep(Duration::from_secs(1));
         send_keys::key_enter(0x1C, 8); // ENTER
         sleep(Duration::from_secs(1));
     }
 }
 
-fn bf2042_message_action(cfg: &structs::SeederConfig) {
+fn bf2042_message_action(message_to_send: &str) {
     unsafe {
         // println!("Open pause menu");
         send_keys::key_enter(0x01, 80); // ESC
@@ -82,13 +84,13 @@ fn bf2042_message_action(cfg: &structs::SeederConfig) {
         // println!("fill mode");
         send_keys::key_enter(0x39, 80); // SPACE
         sleep(Duration::from_secs(1));
-        let mut message: Vec<DXCode> = Vec::new();
-        for char in cfg.message.chars() {
+        let mut current_message: Vec<DXCode> = Vec::new();
+        for char in message_to_send.chars() {
             if let Some(dx) = char_to_dxcodes(char) {
-                message.push(dx)
+                current_message.push(dx)
             }
         }
-        send_keys::send_string(message);
+        send_keys::send_string(current_message);
         sleep(Duration::from_secs(1));
         // println!("done with message");
         send_keys::key_enter(0x1C, 80); // ENTER
@@ -100,20 +102,44 @@ fn bf2042_message_action(cfg: &structs::SeederConfig) {
 }
 
 // https://gist.github.com/dretax/fe37b8baf55bc30e9d63
-pub fn send_message(cfg: &structs::SeederConfig, game_name: &str) {
+pub fn send_message(
+    cfg: &structs::SeederConfig,
+    game_name: &str,
+    current_message_id: &Arc<AtomicU32>,
+) {
     let game_info = is_running(game_name);
     if game_info.is_running {
+        let mut message_id = current_message_id.load(atomic::Ordering::Relaxed);
+        let current_message: &String = &cfg.messages[message_id as usize];
+
         unsafe {
             SetForegroundWindow(game_info.game_process);
             ShowWindow(game_info.game_process, 9);
             sleep(Duration::from_millis(1808));
-            if game_name == "Battlefield™ 2042" {
-                bf2042_message_action(cfg);
-            } else {
-                message_action(cfg);
+
+            match cfg.chat_type {
+                structs::ChatType::Public => {
+                    if game_name == "Battlefield™ 2042" {
+                        bf2042_message_action(current_message);
+                    } else {
+                        message_action(current_message, 0x24);
+                    }
+                }
+                structs::ChatType::Team => message_action(current_message, 0x25),
+                structs::ChatType::Squad => message_action(current_message, 0x26),
             }
+
             ShowWindow(game_info.game_process, 6);
         }
+
+        if message_id + 1 >= cfg.messages.len() as u32 {
+            message_id = 0;
+        } else {
+            message_id += 1;
+        }
+
+        // save
+        current_message_id.store(message_id, atomic::Ordering::Relaxed);
     }
 }
 
