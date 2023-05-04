@@ -52,11 +52,11 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: Install required cargo
-        run: cargo install clippy-sarif sarif-fmt
+        run: cargo install --force clippy-sarif sarif-fmt
 
       - name: Run rust-clippy
         run:
-          cargo clippy --force
+          cargo clippy
           --all-features
           --message-format=json | clippy-sarif | tee rust-clippy-results.sarif | sarif-fmt
         continue-on-error: true
