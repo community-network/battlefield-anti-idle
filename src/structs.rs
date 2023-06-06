@@ -3,6 +3,7 @@ use winapi::shared::windef::HWND__;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub enum ChatType {
+    Announce,
     Public,
     Team,
     Squad,

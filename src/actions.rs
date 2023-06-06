@@ -118,9 +118,18 @@ pub fn send_message(
             sleep(Duration::from_millis(1808));
 
             match cfg.chat_type {
-                structs::ChatType::Public => {
+                structs::ChatType::Announce => {
                     if game_name == "Battlefield™ 2042" {
                         bf2042_message_action(current_message);
+                    } else {
+                        message_action(current_message, 0x24);
+                    }
+                }
+                structs::ChatType::Public => {
+                    if game_name == "Battlefield™ 2042" {
+                        send_keys::key_enter(0x26, 50);
+                        sleep(Duration::from_secs(1));
+                        message_action(current_message, 0x0F);
                     } else {
                         message_action(current_message, 0x24);
                     }

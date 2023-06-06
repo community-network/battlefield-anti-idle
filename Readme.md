@@ -18,8 +18,8 @@ messages = [
     'test2',
     'test3',
 ]
-# In which chat it has to send the messages (can be 'Public', 'Team' or 'Squad')
-# The 'Public' chat can only be used by the server owner in Battlefield 2042!
+# In which chat it has to send the messages (can be 'Announce', 'Public', 'Team' or 'Squad')
+# The 'Announce' chat can only be used by the server owner in Battlefield 2042, on older titles it will use public chat when selected.
 chat_type = 'Public'
 # When it will start sending messages, based on the UTC timezone
 message_start_time_utc = '12:00'
