@@ -1,4 +1,6 @@
 use std::ffi::OsStr;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use std::iter::once;
 use std::os::windows::prelude::OsStrExt;
 use std::ptr;
@@ -101,6 +103,44 @@ fn bf2042_message_action(message_to_send: &str) {
     }
 }
 
+fn get_config_key(chat: &str, defaults: u16) -> u16 {
+    let docs = dirs_next::document_dir();
+    match docs {
+        Some(docs) => {
+            match File::open(format!(
+                "{}\\Battlefield 2042\\settings\\PROFSAVE_profile",
+                docs.to_str().unwrap()
+            )) {
+                Ok(f) => {
+                    let f = BufReader::new(f);
+                    for line in f.lines() {
+                        let line = line.unwrap_or_default();
+                        if line.starts_with(&format!("GstKeyBinding.default.{}.0.button", chat)) {
+                            return match line.split(' ').last().unwrap_or("").parse() {
+                                Ok(key_code) => key_code,
+                                Err(_) => {
+                                    log::error!("Keycode in config invalid, using defaults...");
+                                    defaults
+                                }
+                            };
+                        }
+                    }
+                    log::error!("Keybind not found in config of game, using defaults...");
+                    defaults
+                }
+                Err(_) => {
+                    log::error!("Cant open profsave of bf2042 at \"{}\\Battlefield 2042\\settings\\PROFSAVE_profile\", using defaults...", docs.to_str().unwrap());
+                    defaults
+                }
+            }
+        }
+        None => {
+            log::error!("Can't find documents folder, using defaults...");
+            defaults
+        }
+    }
+}
+
 // https://gist.github.com/dretax/fe37b8baf55bc30e9d63
 pub fn send_message(
     cfg: &structs::SeederConfig,
@@ -116,6 +156,14 @@ pub fn send_message(
             SetForegroundWindow(game_info.game_process);
             ShowWindow(game_info.game_process, 9);
             sleep(Duration::from_millis(1808));
+            let squad_key = match game_name == "Battlefield™ 2042" {
+                true => get_config_key("GstKeyBinding.default.ConceptSquadChat.0.button", 0x26),
+                false => 0x26,
+            };
+            let team_key = match game_name == "Battlefield™ 2042" {
+                true => get_config_key("GstKeyBinding.default.ConceptTeamChat.0.button", 0x25),
+                false => 0x25,
+            };
 
             match cfg.chat_type {
                 structs::ChatType::Announce => {
@@ -127,15 +175,17 @@ pub fn send_message(
                 }
                 structs::ChatType::Public => {
                     if game_name == "Battlefield™ 2042" {
-                        send_keys::key_enter(0x26, 50);
-                        sleep(Duration::from_secs(1));
-                        message_action(current_message, 0x0F);
+                        send_keys::key_enter(squad_key, 50);
+                        sleep(Duration::from_secs(3));
+                        let tab_key =
+                            get_config_key("GstKeyBinding.default.ConceptChat.1.button", 0x0F);
+                        message_action(current_message, tab_key);
                     } else {
-                        message_action(current_message, 0x24);
+                        message_action(current_message, squad_key);
                     }
                 }
-                structs::ChatType::Team => message_action(current_message, 0x25),
-                structs::ChatType::Squad => message_action(current_message, 0x26),
+                structs::ChatType::Team => message_action(current_message, team_key),
+                structs::ChatType::Squad => message_action(current_message, squad_key),
             }
 
             ShowWindow(game_info.game_process, 6);
