@@ -37,13 +37,16 @@ pub fn anti_afk_runner(game_name: &str) {
             println!("error in config.txt: {}", e);
             println!("changing back to default..");
             structs::SeederConfig {
-                minimize_after_message: true,
                 send_messages: false,
+                minimize_after_action: true,
                 messages: vec!["Join our discord, we are always recruiting: discord.gg/BoB".into()],
                 chat_type: ChatType::Public,
                 message_start_time_utc: "12:00".into(),
                 message_stop_time_utc: "23:00".into(),
                 message_timeout_mins: 8,
+                keypress_mode: false,
+                key: "tab".into(),
+                key_hold_time: 80,
             }
         }
     };
@@ -58,7 +61,7 @@ pub fn anti_afk_runner(game_name: &str) {
             actions::send_message(&cfg, game_name, &current_message_id);
             message_timeout.store(0, atomic::Ordering::Relaxed);
         } else {
-            run_once_no_game = actions::anti_afk(game_name, run_once_no_game);
+            run_once_no_game = actions::anti_afk(&cfg, game_name, run_once_no_game);
             if cfg.send_messages {
                 message_timeout.store(timeout + 1, atomic::Ordering::Relaxed);
             }

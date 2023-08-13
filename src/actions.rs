@@ -20,14 +20,33 @@ fn make_l_param(lo_word: i32, hi_word: i32) -> i32 {
     (hi_word << 16) | (lo_word & 0xffff)
 }
 
-pub fn anti_afk(game_name: &str, mut run_once_no_game: bool) -> bool {
+pub fn anti_afk(cfg: &structs::SeederConfig, game_name: &str, mut run_once_no_game: bool) -> bool {
     let game_info = is_running(game_name);
     if game_info.is_running {
         unsafe {
             let current_forground_window = GetForegroundWindow();
-            let l_param = make_l_param(20, 20);
-            SendMessageW(game_info.game_process, 0x201, 0, l_param as isize);
-            SendMessageW(game_info.game_process, 0x202, 0, l_param as isize);
+
+            if cfg.keypress_mode {
+                ShowWindow(game_info.game_process, 9);
+                SetForegroundWindow(game_info.game_process);
+                sleep(Duration::from_millis(1808));
+
+                if cfg.key == "tab" {
+                    send_keys::key_enter(0x0F, cfg.key_hold_time);
+                } else {
+                    send_keys::send_key(&cfg.key, cfg.key_hold_time);
+                }
+                sleep(Duration::from_secs(1));
+
+                if cfg.minimize_after_action {
+                    ShowWindow(game_info.game_process, 6);
+                }
+            } else {
+                // use mousebutton
+                let l_param = make_l_param(20, 20);
+                SendMessageW(game_info.game_process, 0x201, 0, l_param as isize);
+                SendMessageW(game_info.game_process, 0x202, 0, l_param as isize);
+            }
             SetForegroundWindow(current_forground_window);
             // reset no game check
             run_once_no_game = true;
@@ -188,7 +207,7 @@ pub fn send_message(
                 structs::ChatType::Squad => message_action(current_message, squad_key),
             }
 
-            if cfg.minimize_after_message {
+            if cfg.minimize_after_action {
                 ShowWindow(game_info.game_process, 6);
             }
         }

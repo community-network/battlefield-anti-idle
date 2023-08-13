@@ -1,7 +1,7 @@
-mod shared_main;
+mod actions;
 mod chars;
 mod send_keys;
-mod actions;
+mod shared_main;
 mod structs;
 
 fn main() {

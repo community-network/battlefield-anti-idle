@@ -13,14 +13,9 @@ const CHAR_MAPPING: [u16; 47] = [
     0x08, //7
     0x09, //8
     0x0A, //9
-    0x0,
-    0x27, //;
-    0x0,
-    0x0D, //=
-    0x0,
-    0x0,
-    0x0,
-    0x1E, //A
+    0x0, 0x27, //;
+    0x0, 0x0D, //=
+    0x0, 0x0, 0x0, 0x1E, //A
     0x30, //B
     0x2E, //C
     0x20, //D
@@ -46,24 +41,24 @@ const CHAR_MAPPING: [u16; 47] = [
     0x2D, //X
     0x15, //Y
     0x2C, //Z
-];  
+];
 
 #[derive(Debug)]
 pub enum DXCode {
     Symbol(u16),
-    Shifted(u16)
+    Shifted(u16),
 }
 
 /**
-    Convert ASCII char into DirectX key code
- */
+   Convert ASCII char into DirectX key code
+*/
 pub fn char_to_dxcodes(c: char) -> Option<DXCode> {
     let mut c_u8 = c as u8;
 
     if c.is_ascii_lowercase() {
         c_u8 &= 0xdf;
     }
-    
+
     if c.is_ascii_whitespace() {
         return Some(DXCode::Symbol(0x39));
     }

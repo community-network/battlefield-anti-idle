@@ -13,13 +13,16 @@ fn main() {
             println!("error in config.txt: {}", e);
             println!("changing back to default..");
             structs::SeederConfig {
-                minimize_after_message: true,
+                minimize_after_action: true,
                 send_messages: true,
                 messages: vec!["testmessage1".into()],
                 chat_type: ChatType::Public,
                 message_start_time_utc: "12:00".into(),
                 message_stop_time_utc: "23:00".into(),
                 message_timeout_mins: 8,
+                keypress_mode: false,
+                key: "tab".into(),
+                key_hold_time: 80,
             }
         }
     };

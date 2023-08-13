@@ -1,7 +1,10 @@
-minimize_after_message = false
-send_messages = true
-messages = ['t']
+send_messages = false
+minimize_after_action = true
+messages = ['Join our discord, we are always recruiting: discord.gg/BoB']
 chat_type = 'Public'
 message_start_time_utc = '12:00'
 message_stop_time_utc = '23:00'
-message_timeout_mins = 0
+message_timeout_mins = 8
+keypress_mode = false
+key = ' '
+key_hold_time = 80

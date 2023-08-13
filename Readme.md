@@ -12,6 +12,8 @@ Config file
 
 # It will send messages based on timeout when set to true
 send_messages = false
+# minize the game after it has send the message or keypress mode
+minimize_after_action = true
 # Message it will send
 messages = [
     'test1',
@@ -27,4 +29,11 @@ message_start_time_utc = '12:00'
 message_stop_time_utc = '23:00'
 # Timeout used when sending messages
 message_timeout_mins = 8
+
+# Press a key for anti-afk instead (will requires the game to go unminimized)
+keypress_mode = false
+# which key to press (keypress_mode)
+key = ' '
+# how many millisecond to hold the key down (keypress_mode)
+key_hold_time = 80
 ```
