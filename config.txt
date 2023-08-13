@@ -1,9 +1,6 @@
+minimize_after_message = false
 send_messages = true
-messages = [
-    'test1',
-    'test2',
-    'test3',
-]
+messages = ['t']
 chat_type = 'Public'
 message_start_time_utc = '12:00'
 message_stop_time_utc = '23:00'

@@ -11,6 +11,7 @@ pub enum ChatType {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SeederConfig {
+    pub minimize_after_message: bool,
     pub send_messages: bool,
     pub messages: Vec<String>,
     pub chat_type: ChatType,
@@ -28,6 +29,7 @@ pub struct GameInfo {
 impl ::std::default::Default for SeederConfig {
     fn default() -> Self {
         Self {
+            minimize_after_message: true,
             send_messages: false,
             messages: vec!["Join our discord, we are always recruiting: discord.gg/BoB".into()],
             chat_type: ChatType::Public,

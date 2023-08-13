@@ -37,6 +37,7 @@ pub fn anti_afk_runner(game_name: &str) {
             println!("error in config.txt: {}", e);
             println!("changing back to default..");
             structs::SeederConfig {
+                minimize_after_message: true,
                 send_messages: false,
                 messages: vec!["Join our discord, we are always recruiting: discord.gg/BoB".into()],
                 chat_type: ChatType::Public,

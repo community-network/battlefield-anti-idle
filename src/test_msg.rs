@@ -13,6 +13,7 @@ fn main() {
             println!("error in config.txt: {}", e);
             println!("changing back to default..");
             structs::SeederConfig {
+                minimize_after_message: true,
                 send_messages: true,
                 messages: vec!["testmessage1".into()],
                 chat_type: ChatType::Public,

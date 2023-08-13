@@ -188,7 +188,9 @@ pub fn send_message(
                 structs::ChatType::Squad => message_action(current_message, squad_key),
             }
 
-            ShowWindow(game_info.game_process, 6);
+            if cfg.minimize_after_message {
+                ShowWindow(game_info.game_process, 6);
+            }
         }
 
         if message_id + 1 >= cfg.messages.len() as u32 {
