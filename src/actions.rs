@@ -169,7 +169,7 @@ pub fn send_message(
     let game_info = is_running(game_name);
     if game_info.is_running {
         let mut message_id = current_message_id.load(atomic::Ordering::Relaxed);
-        let current_message: &String = &cfg.messages[message_id as usize];
+        let current_message: &str = &cfg.messages[message_id as usize];
 
         unsafe {
             SetForegroundWindow(game_info.game_process);

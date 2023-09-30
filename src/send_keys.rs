@@ -51,7 +51,7 @@ pub unsafe fn key_enter(key_code: u16, timeout: u64) {
     key_up(key_code);
 }
 
-pub unsafe fn send_key(key: &String, timeout: u64) {
+pub unsafe fn send_key(key: &str, timeout: u64) {
     let char = key.chars().next().unwrap();
     if let Some(dx) = char_to_dxcodes(char) {
         match dx {
