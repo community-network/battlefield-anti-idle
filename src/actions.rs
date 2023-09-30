@@ -200,7 +200,7 @@ pub fn send_message(
                             get_config_key("GstKeyBinding.default.ConceptChat.1.button", 0x0F);
                         message_action(current_message, tab_key);
                     } else {
-                        message_action(current_message, squad_key);
+                        message_action(current_message, 0x24);
                     }
                 }
                 structs::ChatType::Team => message_action(current_message, team_key),
